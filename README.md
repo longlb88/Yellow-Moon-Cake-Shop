@@ -16,6 +16,6 @@ It's required some libraries as following:
 ### Connect me via
 1. [GitHub](https://github.com/longlb88)
 2. [Facebook](https://www.facebook.com/long.2ws/)
-3. [Email](mailto:longlebao2000@gmail.com
+3. [Email](mailto:longlebao2000@gmail.com)
 
 #### © 2020 by longlb88
