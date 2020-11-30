@@ -1,0 +1,8 @@
+home
+logout
+create-cake
+manage-cake
+load-image
+search-cake
+update-cake
+manage-user

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+		<title>Login</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+		<link rel="stylesheet" href="assets/css/customize.css">
+    </head>
+    <body>
+		<!-- <nav class="navbar navbar-dark bg-primary">
+			<p class="navbar-brand py-0">Small Social Network</p>
+		</nav> -->
+		<div class="container-fluid h-100 bg-custom">
+			<div class="row h-100 justify-content-center align-items-center">	
+				<div class="card col-10 col-md-8 col-lg-6 p-5">
+						<h1 class="text-center">Sign in</h1>
+							<form action="login" method="POST" class="form-group">
+									<label>ID</label> 
+									<input type="text" name="txtID" value="" class="form-control"/><br/>
+									<label>Password</label>
+									<input type="password" name="txtPassword" value="" class="form-control"/>
+									<br/>
+									<div class="text-center">
+										<input type="submit" value="Login" name="btAction" class="btn btn-primary px-5 my-3"/>
+									</div>	
+							</form>
+							<form id="login-google" method="POST" action="https://accounts.google.com/o/oauth2/auth?scope=email&redirect_uri=http://localhost:8084/J3LP0011_YellowMoon/login-google&response_type=code&client_id=989512040444-79nhduv8ueh2kibgj634aodks60aqb3t.apps.googleusercontent.com&approval_prompt=force">
+							    <div class="text-center">
+								<a class="btn btn-outline-secondary" role="button" style="text-transform:none" onclick="document.getElementById('login-google').submit();">
+								    <img width="20" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="assets/images/google-icon.png" />
+								      Google Login
+								</a>
+							    </div>
+							</form>
+							Want to use as guest? <a href="home">Home Page</a>
+				</div>
+			</div>
+		</div>
+		<script src="assets/js/bootstrap.min.js"></script>
+	</body>
+</html>

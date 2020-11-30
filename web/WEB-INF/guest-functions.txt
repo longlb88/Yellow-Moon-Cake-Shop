@@ -1,0 +1,12 @@
+home
+login-page
+login
+login-google
+load-image
+search-cake
+add-to-cart
+view-cart
+delete-from-cart
+update-quantity
+checkout-cart
+invalid

@@ -1,0 +1,11 @@
+home
+logout
+load-image
+search-cake
+add-to-cart
+view-cart
+delete-from-cart
+update-quantity
+checkout-cart
+track-order
+track-order-page
