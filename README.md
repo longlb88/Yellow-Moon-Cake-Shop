@@ -11,7 +11,7 @@ Login as Google account
 Using data source into Java Web App
 
 ### How to use this?
-It's required some libraries as following:
+It's required some libraries in lib folder
 
 ### Connect me via
 1. [GitHub](https://github.com/longlb88)
