@@ -144,6 +144,7 @@
 		    </c:if>
 	
 		    <!-- Checkout form -->
+		    <c:set var="checkoutInfo" value="${sessionScope.CHECKOUT_INFO}"/>
 		    <div class="my-5">
 			<div class="card">		
 				    <h5 class="card-header" style="font-weight: bold">Checkout</h5>
@@ -151,10 +152,15 @@
 					<div class="text-danger" style="font-weight: bold">
 					    Please check your cart before check out to ensure everything is correct!
 					</div>
-					<form action="checkout-cart" method="GET" >
+					<form action="payment" method="GET" >
 						<div class="form-group">
 							<label>Name</label>
-							<input type="text" name="txtCustomerName" value="${account.name}" placeholder="(eg 1 - 50 chars)" class="form-control" required/>
+							<c:if test="${not empty account}">
+							    <input type="text" name="txtCustomerName" value="${account.name}" placeholder="(eg 1 - 50 chars)" class="form-control" required/>
+							</c:if>
+							<c:if test="${empty account}">
+							    <input type="text" name="txtCustomerName" value="${checkoutInfo.name}" placeholder="(eg 1 - 50 chars)" class="form-control" required/>
+							</c:if>
 							<c:if test="${not empty checkoutError.nameLengthError}">
 							    <div class="text-danger">
 								${checkoutError.nameLengthError}
@@ -163,7 +169,12 @@
 						</div>
 						<div class="form-group">
 							<label>Address</label>
-							<input type="text" name="txtAddress" value="${account.address}" placeholder="(eg 1 - 100 chars)" class="form-control" required/>
+							<c:if test="${not empty account}">
+							    <input type="text" name="txtAddress" value="${account.address}" placeholder="(eg 1 - 100 chars)" class="form-control" required/>
+							</c:if>
+							<c:if test="${empty account}">
+							    <input type="text" name="txtAddress" value="${checkoutInfo.address}" placeholder="(eg 1 - 100 chars)" class="form-control" required/>
+							</c:if>
 							<c:if test="${not empty checkoutError.addressLengthError}">
 							    <div class="text-danger">
 								${checkoutError.addressLengthError}
@@ -172,7 +183,12 @@
 						</div>
 						<div class="form-group">
 							<label>Phone number</label>
-							<input type="text" name="txtPhone" value="${account.phoneNumber}" placeholder="up to 10 digits" class="form-control" required/>
+							<c:if test="${not empty account}">
+							    <input type="text" name="txtPhone" value="${account.phoneNumber}" placeholder="up to 10 digits" class="form-control" required/>
+							</c:if>
+							<c:if test="${empty account}">
+							    <input type="text" name="txtPhone" value="${checkoutInfo.phoneNumber}" placeholder="up to 10 digits" class="form-control" required/>
+							</c:if>
 							<c:if test="${not empty checkoutError.phoneNumberLengthError}">
 							    <div class="text-danger">
 								${checkoutError.phoneNumberLengthError}
@@ -184,13 +200,26 @@
 							    </div>
 							</c:if>
 						</div>
+						
+						<c:set var="paymentMethods" value="${requestScope.PAYMENT_METHODS}"/>
 						<div class="form-group">
 							<label>Payment Method</label>
 							<select name="cmbPaymentMethod" class="form-control">
-							    <option>COD</option>
-							    <option>Paypal</option>			    
+							    <c:forEach var="method" items="${paymentMethods}">
+								<option value="${method.paymentID}"
+									<c:if test="${(method.paymentID eq requestScope.cmbPaymentMethod) or (method.paymentID eq checkoutInfo.paymentMethod)}}">
+									    selected="true"
+									</c:if>>
+								    ${method.paymentID}
+								</option>
+							    </c:forEach>			    
 							</select> 
-						</div>							
+						</div>
+						<c:if test="${not empty checkoutError.notPaidError}">
+						    <div class="text-danger">
+							${checkoutError.notPaidError}
+						    </div>
+						</c:if>
 						<div class="text-right">
 							<input type="submit" value="Confirm" class="btn btn-success mt-3" />
 						</div>

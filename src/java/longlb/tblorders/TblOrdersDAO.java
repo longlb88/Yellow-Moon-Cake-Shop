@@ -26,8 +26,8 @@ public class TblOrdersDAO implements Serializable{
 	try {
 	    con = DBHelpers.makeConnection();
 	    if (con != null){
-		String sql = "INSERT INTO tblOrders(name, address, phoneNumber, userID, total, paymentID) "
-			+ "VALUES(?,?,?,?,?,?)";
+		String sql = "INSERT INTO tblOrders(name, address, phoneNumber, userID, total, paymentID, paymentStatus) "
+			+ "VALUES(?,?,?,?,?,?,?)";
 		
 		stm = con.prepareStatement(sql);
 		stm.setString(1, name);
@@ -36,6 +36,12 @@ public class TblOrdersDAO implements Serializable{
 		stm.setString(4, userID);
 		stm.setDouble(5, total);
 		stm.setString(6, paymentID);
+		
+		if (paymentID.equals("PayPal")){
+		    stm.setString(7, "P");
+		} else {
+		    stm.setString(7, "N");
+		}
 		
 		int row = stm.executeUpdate();
 		

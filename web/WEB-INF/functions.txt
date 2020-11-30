@@ -23,3 +23,4 @@ track-order-page=track-order.jsp
 login-google=LoginGoogleServlet
 manage-user=ManageUserServlet
 manage-user-page=manage-user.jsp
+payment=ProcessPaymentServlet

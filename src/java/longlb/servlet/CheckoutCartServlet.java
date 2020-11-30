@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import longlb.cart.CartItem;
 import longlb.cart.CartObject;
+import longlb.order.CustomerCheckoutInfo;
+import longlb.paypal.PaypalCheckoutUtil;
 import longlb.tblorderdetail.TblOrderDetailDAO;
 import longlb.tblorders.TblOrdersCheckoutError;
 import longlb.tblorders.TblOrdersDAO;
@@ -60,6 +62,8 @@ public class CheckoutCartServlet extends HttpServlet {
 	String userID = "";
 	String url = ERROR_PAGE;
 	
+	String paypalReturnToken = request.getParameter("token");
+	
 	try{
 	    HttpSession session = request.getSession(false);
 	    if (session != null){
@@ -76,18 +80,30 @@ public class CheckoutCartServlet extends HttpServlet {
 			TblOrdersCheckoutError errors = new TblOrdersCheckoutError();
 			boolean foundError = false;
 			
+			//when redirect from paypal payment page, payment medthod will be null
+			//because all checkout info not exist on parameter
+			if (paymentMethod == null){
+			    // Get checkout info from session
+			    CustomerCheckoutInfo checkoutInfo = (CustomerCheckoutInfo) session.getAttribute("CHECKOUT_INFO");
+			    name = checkoutInfo.getName();
+			    phoneNumber = checkoutInfo.getPhoneNumber();
+			    address = checkoutInfo.getAddress();
+			    paymentMethod = checkoutInfo.getPaymentMethod();
+			}
+			
+			// if error not occur via payment
 			//check name
 			if (name.length() > 50){
 			    errors.setNameLengthError("Name is limit to 50 chars");
 			    foundError = true;
 			}
-			
+
 			//check address
 			if (address.length() > 100){
 			    errors.setAddressLengthError("Address is limit to 100 chars");
 			    foundError = true;
 			}
-			
+
 			//check phone number
 			if (phoneNumber.length() > 10){
 			    errors.setPhoneNumberLengthError("Phone number is limit to 10 digits");
@@ -96,20 +112,32 @@ public class CheckoutCartServlet extends HttpServlet {
 			    errors.setPhoneNumberFormarError("Phone number only allows digits");
 			    foundError = true;
 			}
-			
+
 			//check cakes
 			String availableError = checkCakesAvaialable(cart);
 			if (!availableError.isEmpty()){
 			    errors.setCakeIsNotAvailableError(availableError + ". Please remove it from your cart to checkout!");
 			    foundError = true;
 			}
-			
+
 			String buyQuantityError = checkCakeQuantity(cart);
 			if (!buyQuantityError.isEmpty()){
 			    errors.setBuyQuantityError(buyQuantityError + "Please change quantity to checkout!");
 			    foundError = true;
 			}
 			
+			//Check payment status
+			if (!foundError){			
+			    boolean isCompleted = PaypalCheckoutUtil.captureOrder(paypalReturnToken);
+			    if (isCompleted){
+				//clear checkout info on session
+				session.setAttribute("CHECKOUT_INFO", null);
+			    }
+			    else {
+				errors.setNotPaidError("You have not completed PayPal payment!");
+				foundError = true;
+			    }
+			}
 			
 			if (foundError){
 			    request.setAttribute("CHECKOUT_ERROR", errors);
@@ -142,6 +170,9 @@ public class CheckoutCartServlet extends HttpServlet {
 				
 				//remove cart
 				session.setAttribute("CART", null); 
+				
+				//clear checkout info on session
+				session.setAttribute("CHECKOUT_INFO", null);
 				
 				url = CHECKOUT_SUCCESSFUL_PAGE;
 			    }

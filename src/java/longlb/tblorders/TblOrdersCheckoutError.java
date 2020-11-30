@@ -18,6 +18,7 @@ public class TblOrdersCheckoutError implements Serializable{
     private String phoneNumberFormarError;
     private String cakeIsNotAvailableError;
     private String buyQuantityError;
+    private String notPaidError;
 
     /**
      * @return the nameLengthError
@@ -101,6 +102,20 @@ public class TblOrdersCheckoutError implements Serializable{
      */
     public void setBuyQuantityError(String buyQuantityError) {
 	this.buyQuantityError = buyQuantityError;
+    }
+
+    /**
+     * @return the notPaidError
+     */
+    public String getNotPaidError() {
+	return notPaidError;
+    }
+
+    /**
+     * @param notPaidError the notPaidError to set
+     */
+    public void setNotPaidError(String notPaidError) {
+	this.notPaidError = notPaidError;
     }
     
     

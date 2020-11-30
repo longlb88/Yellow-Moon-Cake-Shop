@@ -6,6 +6,8 @@ This repo contains the source code of Lab Java Web Application - Yellow Moon Sho
 ### You will find in this repo
 An online shopping web app which uses Filter as Main Controller and follows MVC2 model
 
+Integrate PayPal Online Payemt
+
 Login as Google account
 
 Using data source into Java Web App

@@ -20,7 +20,7 @@ public class Credentials {
     private static PayPalEnvironment enviroment = new PayPalEnvironment.Sandbox(clientID, clientSecret);
     
     //get client
-    public PayPalHttpClient getClient(){
+    public static PayPalHttpClient getClient(){
 	return new PayPalHttpClient(enviroment);
     }
 }

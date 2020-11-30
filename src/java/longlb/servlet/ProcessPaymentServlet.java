@@ -6,11 +6,7 @@
 package longlb.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
-import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,20 +14,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import longlb.cart.CartItem;
 import longlb.cart.CartObject;
-import longlb.tblpaymentmethod.TblPaymentMethodDAO;
-import longlb.tblpaymentmethod.TblPaymentMethodDTO;
-import org.apache.log4j.Logger;
+import longlb.order.CustomerCheckoutInfo;
+import longlb.paypal.PaypalCheckoutUtil;
 
 /**
  *
  * @author Long Le
  */
-@WebServlet(name = "ViewCartServlet", urlPatterns = {"/ViewCartServlet"})
-public class ViewCartServlet extends HttpServlet {
-    private final String VIEW_CART_PAGE = "view-cart-page";
-    private final Logger log = Logger.getLogger(ViewCartServlet.class.getName());
+@WebServlet(name = "ProcessPaymentServlet", urlPatterns = {"/ProcessPaymentServlet"})
+public class ProcessPaymentServlet extends HttpServlet {
+    private final String CHECKOUT_CART_SERVLET = "checkout-cart";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -44,46 +37,31 @@ public class ViewCartServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 	response.setContentType("text/html;charset=UTF-8");
-	PrintWriter out = response.getWriter();
-	String url = VIEW_CART_PAGE;
 	
-	try {
-	    HttpSession session = request.getSession(false);
-	    if (session != null){
-		CartObject cart = (CartObject) session.getAttribute("CART");
-		if (cart != null){
-		    if (cart.getItemList() != null){
-			//reload cakes's info in case there are change
-			cart.reloadItemInfo();
-			for (CartItem cartItem : cart.getItemList()) {
-			    cartItem.updateTotal();
-			}
-			session.setAttribute("CART", cart);
-			
-			//get cart from sesion and put to request
-			request.setAttribute("CART", cart);
-			
-			//get total price of cart
-			double totalPrice = cart.getTotalPriceOfCart();
-			request.setAttribute("TOTAL_PRICE", totalPrice);
-		    }
-		}
-		
-		TblPaymentMethodDAO dao = new TblPaymentMethodDAO();
-		dao.loadAllPaymentMethod();
-		List<TblPaymentMethodDTO> listMethod = dao.getListPaymentMethod();
-		request.setAttribute("PAYMENT_METHODS", listMethod);
-	    }	    
-	} catch (SQLException ex) {
-	    log.error("SQLException: " + ex.getMessage());
-	} catch (NamingException ex) {
-	    log.error("NamingException: " + ex.getMessage());
-	} finally {
+	String paymentMethod = request.getParameter("cmbPaymentMethod");
+	
+	if (paymentMethod.equals("COD")){
 	    Map<String, String> functionMap = (Map<String, String>) getServletContext().getAttribute("FUNCTIONS_MAP");
-	    url = functionMap.get(url);
+	    String url = functionMap.get(CHECKOUT_CART_SERVLET);
 	    RequestDispatcher rd = request.getRequestDispatcher(url);
 	    rd.forward(request, response);
-	    out.close();
+	}
+	else {
+	    //save parameters to session
+	    String name = request.getParameter("txtCustomerName");
+	    String address = request.getParameter("txtAddress");
+	    String phoneNumber = request.getParameter("txtPhone");
+	    CustomerCheckoutInfo checkoutInfo = new CustomerCheckoutInfo(name, phoneNumber, address, paymentMethod);
+	    
+	    HttpSession session = request.getSession(false);
+	    session.setAttribute("CHECKOUT_INFO", checkoutInfo);
+	    
+	    // Create order for customer
+	    double totalMoney = ((CartObject) session.getAttribute("CART")).getTotalPriceOfCart();
+	    String paypalCheckoutLink = PaypalCheckoutUtil.createOrder(totalMoney);
+	    
+	    // Redirect customer to paypal checkout page
+	    response.sendRedirect(paypalCheckoutLink);
 	}
     }
 

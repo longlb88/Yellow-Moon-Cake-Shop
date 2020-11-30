@@ -10,3 +10,4 @@ delete-from-cart
 update-quantity
 checkout-cart
 invalid
+payment

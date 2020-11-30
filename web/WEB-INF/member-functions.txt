@@ -9,3 +9,4 @@ update-quantity
 checkout-cart
 track-order
 track-order-page
+payment
